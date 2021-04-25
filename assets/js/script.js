@@ -8,6 +8,7 @@ $(function(){
         closeForm = shoutboxForm.find('h2 span'),
         nameElement = form.find('#shoutbox-name'),
         commentElement = form.find('#shoutbox-comment'),
+        nameBlock = $('#name-block'),
         ul = $('ul.shoutbox-content');
 
 
@@ -16,6 +17,12 @@ $(function(){
 
     // Load the comments.
     load();
+
+    let userName = getCookie('_uname');
+    if (userName !== undefined){
+        nameElement.val(userName);
+        nameBlock.hide();
+    }
     
     // On form submit, if everything is filled in, publish the shout to the database
     
@@ -47,26 +54,12 @@ $(function(){
 
     });
     
-    // Toggle the visibility of the form.
-    
-    shoutboxForm.on('click', 'h2', function(e){
-        
-        if(form.is(':visible')) {
-            formClose();
-        }
-        else {
-            formOpen();
-        }
-        
-    });
-    
     // Clicking on the REPLY button writes the name of the person you want to reply to into the textbox.
     
     ul.on('click', '.shoutbox-comment-reply', function(e){
         
         var replyName = $(this).data('name');
-        
-        formOpen();
+
         commentElement.val('@'+replyName+' ').focus();
 
     });
@@ -88,35 +81,22 @@ $(function(){
         }, 2000);
     });
 
-    // Automatically refresh the shouts every 20 seconds
-    setInterval(load,20000);
+    // Automatically refresh the shouts every 5 seconds
+    setInterval(load,5000);
 
-
-    function formOpen(){
-        
-        if(form.is(':visible')) return;
-
-        form.slideDown();
-        closeForm.fadeIn();
-    }
-
-    function formClose(){
-
-        if(!form.is(':visible')) return;
-
-        form.slideUp();
-        closeForm.fadeOut();
-    }
 
     // Store the shout in the database
     
     function publish(name,comment){
-    
+        storeName(name);
         $.post('publish.php', {name: name, comment: comment}, function(){
-            nameElement.val("");
             commentElement.val("");
             load();
         });
+
+        if (nameBlock.is(':visible')){
+            nameBlock.hide();
+        }
 
     }
     
@@ -143,6 +123,45 @@ $(function(){
             '</li>');
         });
 
+    }
+
+    function storeName(username) {
+        if (getCookie('_uname') === undefined){
+            setCookie('_uname', username);
+        }
+    }
+
+    function getCookie(name) {
+        let matches = document.cookie.match(new RegExp(
+            "(?:^|; )" + name.replace(/([\.$?*|{}\(\)\[\]\\\/\+^])/g, '\\$1') + "=([^;]*)"
+        ));
+        return matches ? decodeURIComponent(matches[1]) : undefined;
+    }
+
+    function setCookie(name, value, options = {}) {
+
+        options = {
+            path: '/',
+            // при необходимости добавьте другие значения по умолчанию
+            ...options
+        };
+
+        if (options.expires instanceof Date) {
+            options.expires = options.expires.toUTCString();
+        }
+
+        let updatedCookie = encodeURIComponent(name) + "=" + encodeURIComponent(value);
+
+        for (let optionKey in options) {
+            updatedCookie += "; " + optionKey;
+            let optionValue = options[optionKey];
+            if (optionValue !== true) {
+                updatedCookie += "=" + optionValue;
+            }
+        }
+
+        document.cookie = updatedCookie;
+        console.log(updatedCookie);
     }
 
 });

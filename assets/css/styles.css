@@ -9,7 +9,7 @@
 body{
     color: #4B535C;
     font:13px Arial, Helvetica, sans-serif;
-    padding-top:40px;
+    padding-top:10px;
 }
 
 /* ------- The main content ------- */
@@ -18,6 +18,8 @@ body{
     max-width: 474px;
     margin: 0 auto;
     overflow: hidden;
+    display: flex;
+    flex-direction: column;
 }
 
 h1 {
@@ -56,6 +58,15 @@ h1 img {
     font-size: 14px;
     font-weight: 700;
     text-align: left;
+}
+
+.overflow-block {
+    overflow: scroll; /* Добавляем полосы прокрутки */
+    width: 100%; /* Ширина блока */
+    height:-webkit-calc(100vh - 100px);
+    height:calc(100vh - 350px);
+    padding: 5px; /* Поля вокруг текста */
+    border: solid 1px black; /* Параметры рамки */
 }
 
 .shoutbox-content li {
@@ -141,7 +152,6 @@ h2 span {
 }
 
 .shoutbox-form form {
-    display: none;
     background-color:  #f9fafb;
     box-shadow: 0px 2px 0px 0.00px #e2e8eb;
     max-width: 100%;
@@ -304,4 +314,11 @@ footer #tzine-actions iframe{
 
 @media (max-width: 1024px) {
     #bsaHolder, footer{ display:none;}
+}
+
+.footer-block {
+    position:absolute;
+    bottom:0;
+    width: 360px;
+    display: flex;
 }
