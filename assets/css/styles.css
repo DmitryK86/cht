@@ -62,9 +62,8 @@ h1 img {
 
 .overflow-block {
     overflow: scroll; /* Добавляем полосы прокрутки */
-    width: 100%; /* Ширина блока */
-    height:-webkit-calc(100vh - 100px);
-    height:calc(100vh - 350px);
+    height:-webkit-calc(100vh - 210px);
+    height:calc(100vh - 210px);
     padding: 5px; /* Поля вокруг текста */
     border: solid 1px black; /* Параметры рамки */
 }
@@ -152,11 +151,7 @@ h2 span {
 }
 
 .shoutbox-form form {
-    background-color:  #f9fafb;
-    box-shadow: 0px 2px 0px 0.00px #e2e8eb;
-    max-width: 100%;
-    text-align: left;
-    padding: 20px 20px 30px;
+    background-color:  #dae2ea;
 }
 
 .shoutbox-form form label {
@@ -316,9 +311,10 @@ footer #tzine-actions iframe{
     #bsaHolder, footer{ display:none;}
 }
 
-.footer-block {
-    position:absolute;
-    bottom:0;
-    width: 360px;
+.form-block {
     display: flex;
+}
+
+.my-msg {
+    background-color: wheat;
 }

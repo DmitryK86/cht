@@ -8,7 +8,6 @@ $(function(){
         closeForm = shoutboxForm.find('h2 span'),
         nameElement = form.find('#shoutbox-name'),
         commentElement = form.find('#shoutbox-comment'),
-        nameBlock = $('#name-block'),
         ul = $('ul.shoutbox-content');
 
 
@@ -19,9 +18,10 @@ $(function(){
     load();
 
     let userName = getCookie('_uname');
-    if (userName !== undefined){
+    if (userName === undefined){
+        setName(nameElement);
+    } else {
         nameElement.val(userName);
-        nameBlock.hide();
     }
     
     // On form submit, if everything is filled in, publish the shout to the database
@@ -37,7 +37,7 @@ $(function(){
         var comment = commentElement.val().trim();
 
         if(name.length && comment.length && comment.length < 240) {
-        
+
             publish(name, comment);
 
             // Prevent new shouts from being published
@@ -58,10 +58,9 @@ $(function(){
     
     ul.on('click', '.shoutbox-comment-reply', function(e){
         
-        var replyName = $(this).data('name');
+        var replyText = $(this).data('text');
 
-        commentElement.val('@'+replyName+' ').focus();
-
+        commentElement.val('@'+replyText+'\r\n').focus();
     });
     
     // Clicking the refresh button will force the load function
@@ -88,16 +87,10 @@ $(function(){
     // Store the shout in the database
     
     function publish(name,comment){
-        storeName(name);
         $.post('publish.php', {name: name, comment: comment}, function(){
             commentElement.val("");
             load();
         });
-
-        if (nameBlock.is(':visible')){
-            nameBlock.hide();
-        }
-
     }
     
     // Fetch the latest shouts
@@ -115,20 +108,29 @@ $(function(){
         ul.empty();
 
         data.forEach(function(d){
-            ul.append('<li>'+
+            ul.append('<li class="'+ getMessageClass(d.name) +'">'+
                 '<span class="shoutbox-username">' + d.name + '</span>'+
                 '<p class="shoutbox-comment">' + emojione.toImage(d.text) + '</p>'+
-                '<div class="shoutbox-comment-details"><span class="shoutbox-comment-reply" data-name="' + d.name + '">REPLY</span>'+
+                '<div class="shoutbox-comment-details"><span class="shoutbox-comment-reply" data-text="' + cutText(d.text) + '">REPLY</span>'+
                 '<span class="shoutbox-comment-ago">' + d.timeAgo + '</span></div>'+
             '</li>');
         });
 
     }
 
-    function storeName(username) {
-        if (getCookie('_uname') === undefined){
-            setCookie('_uname', username);
+    function getMessageClass(uname){
+        if (getCookie('_uname') == uname){
+            return 'my-msg';
         }
+        return '';
+    }
+
+    function cutText(text){
+        if (text.length <= 20){
+            return text;
+        }
+
+        return text.slice(0, 20) + '...';
     }
 
     function getCookie(name) {
@@ -138,30 +140,35 @@ $(function(){
         return matches ? decodeURIComponent(matches[1]) : undefined;
     }
 
-    function setCookie(name, value, options = {}) {
-
-        options = {
-            path: '/',
-            // при необходимости добавьте другие значения по умолчанию
-            ...options
-        };
-
-        if (options.expires instanceof Date) {
-            options.expires = options.expires.toUTCString();
-        }
-
-        let updatedCookie = encodeURIComponent(name) + "=" + encodeURIComponent(value);
-
-        for (let optionKey in options) {
-            updatedCookie += "; " + optionKey;
-            let optionValue = options[optionKey];
-            if (optionValue !== true) {
-                updatedCookie += "=" + optionValue;
-            }
-        }
-
-        document.cookie = updatedCookie;
-        console.log(updatedCookie);
+    async function setName(nameElement){
+        await Swal.fire({
+            title: 'Enter username',
+            input: 'text',
+            inputAttributes: {
+                autocapitalize: 'off'
+            },
+            showLoaderOnConfirm: true,
+            allowOutsideClick: false,
+            inputValidator: (value) => {
+                if (!value) {
+                    return 'You need to write something!'
+                }
+            },
+            preConfirm: (name) => {
+                return fetch(`/setName.php?name=${name}`)
+                    .then(response => {
+                        if (!response.ok) {
+                            throw new Error(response.message)
+                        }
+                        nameElement.val(name);
+                    })
+                    .catch(error => {
+                        Swal.showValidationMessage(
+                            `Request failed: ${error}`
+                        )
+                    })
+            },
+        });
     }
 
 });
