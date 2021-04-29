@@ -2,13 +2,11 @@ $(function(){
 
     // Storing some elements in variables for a cleaner code base
 
-    var refreshButton = $('h1 img'),
-        shoutboxForm = $('.shoutbox-form'),
-        form = shoutboxForm.find('form'),
-        closeForm = shoutboxForm.find('h2 span'),
+    var refreshButton = $('#refresh'),
+        form = $('#shoutbox-form'),
         nameElement = form.find('#shoutbox-name'),
         commentElement = form.find('#shoutbox-comment'),
-        ul = $('ul.shoutbox-content');
+        messagesBlock = $('#messages-block');
 
 
     // Replace :) with emoji icons:
@@ -55,9 +53,8 @@ $(function(){
     });
     
     // Clicking on the REPLY button writes the name of the person you want to reply to into the textbox.
-    
-    ul.on('click', '.shoutbox-comment-reply', function(e){
-        
+
+    messagesBlock.on('click', '#comment-reply', function(e){
         var replyText = $(this).data('text');
 
         commentElement.val('@'+replyText+'\r\n').focus();
@@ -81,7 +78,7 @@ $(function(){
     });
 
     // Automatically refresh the shouts every 5 seconds
-    setInterval(load,5000);
+    //setInterval(load,5000);
 
 
     // Store the shout in the database
@@ -105,22 +102,27 @@ $(function(){
     
     function appendComments(data) {
 
-        ul.empty();
+        messagesBlock.empty();
 
         data.forEach(function(d){
-            ul.append('<li class="'+ getMessageClass(d.name) +'">'+
-                '<span class="shoutbox-username">' + d.name + '</span>'+
-                '<p class="shoutbox-comment">' + emojione.toImage(d.text) + '</p>'+
-                '<div class="shoutbox-comment-details"><span class="shoutbox-comment-reply" data-text="' + cutText(d.text) + '">REPLY</span>'+
-                '<span class="shoutbox-comment-ago">' + d.timeAgo + '</span></div>'+
-            '</li>');
+            let elem = document.createElement('div');
+            elem.className = 'container list-group-item ' + getMessageClass(d.name);
+            elem.innerHTML = '<div class="row justify-content-between">' +
+                '<div class="col-7"><h6 className="mb-1" style="color: red">' + d.name + '</h6></div>'+
+                '<div class="col-5" style="text-align: right;"><small>' + d.timeAgo + '</small></div>'+
+            '</div>'+
+            '<p className="mb-1">' + emojione.toImage(d.text) + '</p>'+
+            '<small><a data-text="'+ cutText(d.text) +'" href="#" id="comment-reply">REPLAY</a></small>';
+            messagesBlock.append(elem);
         });
+
+        //$('#messages-block').scrollHeight = 1000
 
     }
 
     function getMessageClass(uname){
         if (getCookie('_uname') == uname){
-            return 'my-msg';
+            return 'list-group-item-warning';
         }
         return '';
     }

@@ -1,47 +1,44 @@
-<!DOCTYPE html>
-<html>
-    
-    <head>
-        
-        <meta charset="utf-8">
-        <meta http-equiv="X-UA-Compatible" content="IE=edge">
-        <meta name="viewport" content="width=device-width, initial-scale=1">
-        
-        <title>Making a Shoutbox with PHP and jQuery</title>
-        
-        <link rel="stylesheet" href="http://cdn.jsdelivr.net/emojione/1.3.0/assets/css/emojione.min.css"/>
-        <link rel="stylesheet" href="./assets/css/styles.css" />
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/5.0.0-alpha1/css/bootstrap.min.css" integrity="sha384-r4NyP46KrjDleawBgD5tp8Y7UzmLA05oM1iAEQ17CSuDqnUK2+k9luXQOfXJCJ4I" crossorigin="anonymous">
 
-    </head>
-    
-    <body>
-     
-        <div class="shoutbox">
-            
-            <h1>Shout box <img src='./assets/img/refresh.png'/></h1>
+    <title>Shout box on PHP</title>
+</head>
+<body>
 
-            <div class="overflow-block">
-                <ul class="shoutbox-content"></ul>
-            </div>
-
-            <div class="shoutbox-form">
-                <form action="./publish.php" method="post">
-                    <div class="form-block">
-                        <input type="hidden" id="shoutbox-name" name="name"/>
-                        <textarea id="shoutbox-comment" name="comment" maxlength='240' placeholder="Message"></textarea>
-                        <input type="submit" value="Send"/>
-                    </div>
-                </form>
-            </div>
+<div class="container" style="height: 100vh">
+    <nav class="navbar navbar-expand-lg navbar-light bg-light">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="#">Shout box</a>
+            <button type="button" class="btn btn-labeled btn-info" id="refresh">
+                <img src="assets/img/refresh.png" style="height: 25px;">
+            </button>
+        </div>
+    </nav>
+    <div class="container" style="overflow: scroll; height: 80vh; padding: 0">
+        <div class="list-group" id="messages-block">
 
         </div>
+    </div>
+    <div class="fixed-bottom d-flex justify-content-center">
+        <form class="row" id="shoutbox-form" style="max-height: 90px;border: 1px solid #d3d7dc; min-width: 355px;max-width: 355px; border-radius: 8px;">
+            <div class="col-9" style="padding: 0">
+                <input type="hidden" id="shoutbox-name" name="name"/>
+                <textarea class="form-control" placeholder="Message" rows="2" id="shoutbox-comment"></textarea>
+            </div>
+            <div class="col-3">
+                <button type="submit" class="btn btn-primary mb-2" style="height: 100%;">Send</button>
+            </div>
+        </form>
+    </div>
+</div>
 
-        <!-- Include jQuery and the EmojiOne library -->
-        <script src="http://code.jquery.com/jquery-2.1.3.min.js"></script>
-        <script src="http://cdn.jsdelivr.net/emojione/1.3.0/lib/js/emojione.min.js"></script>
-        <script src="//cdn.jsdelivr.net/npm/sweetalert2@10"></script>
-        <script src="./assets/js/script.js"></script>
-
-    </body>
-    
+<script src="/assets/js/jquery-3.6.0.min.js"></script>
+<script src="/assets/js/emojione.min.js"></script>
+<script src="/assets/js/sweetalert.min.js"></script>
+<script src="/assets/js/script.js"></script>
+</body>
 </html>
