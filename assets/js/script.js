@@ -5,6 +5,7 @@ $(function(){
     var refreshButton = $('#refresh'),
         form = $('#shoutbox-form'),
         nameElement = form.find('#shoutbox-name'),
+        replyTextElem = form.find('#reply-text'),
         commentElement = form.find('#shoutbox-comment'),
         messagesBlock = $('#messages-block');
 
@@ -33,10 +34,11 @@ $(function(){
         
         var name = nameElement.val().trim();
         var comment = commentElement.val().trim();
+        var reply = replyTextElem.val();
 
         if(name.length && comment.length && comment.length < 240) {
 
-            publish(name, comment);
+            publish(name, comment, reply);
 
             // Prevent new shouts from being published
 
@@ -46,7 +48,7 @@ $(function(){
 
             setTimeout(function(){
                 canPostComment = true;
-            }, 5000);
+            }, 2000);
 
         }
 
@@ -57,6 +59,7 @@ $(function(){
     messagesBlock.on('click', '#comment-reply', function(e){
         var replyText = $(this).data('text');
 
+        replyTextElem.val('@'+replyText);
         commentElement.val('@'+replyText+'\r\n').focus();
     });
     
@@ -83,9 +86,10 @@ $(function(){
 
     // Store the shout in the database
     
-    function publish(name,comment){
-        $.post('publish.php', {name: name, comment: comment}, function(){
+    function publish(name,comment, reply){
+        $.post('publish.php', {name: name, comment: comment, reply: reply}, function(){
             commentElement.val("");
+            replyTextElem.val("");
             load();
         });
     }
@@ -105,18 +109,42 @@ $(function(){
         messagesBlock.empty();
 
         data.forEach(function(d){
-            let elem = document.createElement('div');
+            let nameElem = document.createElement('div'),
+                timeElem = document.createElement('div'),
+                nameTimeElem = document.createElement('div'),
+                textElem = document.createElement('p'),
+                replyBtn = document.createElement('small'),
+                elem = document.createElement('div');
+
+            nameElem.className = 'col-7';
+            nameElem.innerHTML = '<h6 class="mb-1" style="color: red">' + d.name + '</h6>';
+
+            timeElem.className = 'col-5';
+            timeElem.setAttribute("style", "text-align:right;");
+            timeElem.innerText = d.timeAgo;
+
+            nameTimeElem.className = 'row justify-content-between';
+            nameTimeElem.prepend(timeElem);
+            nameTimeElem.prepend(nameElem);
+
+            textElem.className = 'mb-1';
+            textElem.innerText = emojione.toImage(d.text);
+
+            replyBtn.innerHTML = '<a data-text="'+ cutText(d.text) +'" href="#" id="comment-reply">REPLAY</a>';
+
             elem.className = 'container list-group-item ' + getMessageClass(d.name);
-            elem.innerHTML = '<div class="row justify-content-between">' +
-                '<div class="col-7"><h6 className="mb-1" style="color: red">' + d.name + '</h6></div>'+
-                '<div class="col-5" style="text-align: right;"><small>' + d.timeAgo + '</small></div>'+
-            '</div>'+
-            '<p className="mb-1">' + emojione.toImage(d.text) + '</p>'+
-            '<small><a data-text="'+ cutText(d.text) +'" href="#" id="comment-reply">REPLAY</a></small>';
+            elem.prepend(replyBtn);
+            elem.prepend(textElem);
+            if (d.replyText && d.replyText.length){
+                let reply = document.createElement('div');
+                reply.style.marginBottom = '10px';
+                reply.innerHTML = '<small style="background: #8ae479;padding: 8px;border-radius: 5px;">'+d.replyText+'</small>';
+                elem.prepend(reply);
+            }
+            elem.prepend(nameTimeElem);
+
             messagesBlock.append(elem);
         });
-
-        //$('#messages-block').scrollHeight = 1000
 
     }
 

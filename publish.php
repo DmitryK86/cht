@@ -21,12 +21,19 @@ if(isset($_POST["name"]) && isset($_POST["comment"])) {
 
     $comment = htmlspecialchars($_POST["comment"]);
     $comment = str_replace(array("\n", "\r"), '', $comment);
+
+    $replyText = $_POST['reply'] ?? '';
+
+    if (!empty($replyText)){
+        $comment = str_replace($replyText, '', $comment);
+    }
     
     // Storing a new shout
 
     $shout = new \JamesMoss\Flywheel\Document(array(
         'text' => $comment,
         'name' => $name,
+        'replyText' => $replyText,
         'createdAt' => time()
     ));
     
