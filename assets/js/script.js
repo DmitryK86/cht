@@ -146,7 +146,7 @@ $(function(){
             messagesBlock.prepend(elem);
         });
 
-        $('.container').scrollTop($('.container').height());
+        $('.container').scrollTop(messagesBlock.height());
     }
 
     function getMessageClass(uname){
