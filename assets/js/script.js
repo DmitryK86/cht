@@ -96,17 +96,19 @@ $(function(){
     
     // Fetch the latest shouts
     
-    function load(){
+    function load(force){
         $.getJSON('./load.php', function(data) {
-            appendComments(data);
+            appendComments(data, force);
         });
     }
     
     // Render an array of shouts as HTML
     
-    function appendComments(data) {
+    function appendComments(data, force) {
         var id = $('#messages-block .container').last().data('id');
-        if (id && id === data[0].id){
+
+        if (!force && id && id === data[0].id){
+            console.log(force);
             return;
         }
 
@@ -197,6 +199,7 @@ $(function(){
                             throw new Error(response.message)
                         }
                         nameElement.val(name);
+                        load(true);
                     })
                     .catch(error => {
                         Swal.showValidationMessage(
