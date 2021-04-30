@@ -128,7 +128,7 @@ $(function(){
             nameTimeElem.prepend(nameElem);
 
             textElem.className = 'mb-1';
-            textElem.innerText = emojione.toImage(d.text);
+            textElem.innerHTML = emojione.toImage(d.text);
 
             replyBtn.innerHTML = '<a data-text="'+ cutText(d.text) +'" href="#" id="comment-reply">REPLAY</a>';
 
