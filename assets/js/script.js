@@ -105,6 +105,10 @@ $(function(){
     // Render an array of shouts as HTML
     
     function appendComments(data) {
+        var id = $('#messages-block .container').last().data('id');
+        if (id && id === data[0].id){
+            return;
+        }
 
         messagesBlock.empty();
 
@@ -133,6 +137,7 @@ $(function(){
             replyBtn.innerHTML = '<a data-text="'+ cutText(d.text) +'" href="#" id="comment-reply">REPLAY</a>';
 
             elem.className = 'container list-group-item ' + getMessageClass(d.name);
+            elem.setAttribute('data-id', d.id);
             elem.prepend(replyBtn);
             elem.prepend(textElem);
             if (d.replyText && d.replyText.length){
@@ -146,7 +151,7 @@ $(function(){
             messagesBlock.prepend(elem);
         });
 
-        $('.container').scrollTop(messagesBlock.height());
+        $('#overflow-block').scrollTop(messagesBlock.height());
     }
 
     function getMessageClass(uname){
