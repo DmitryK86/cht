@@ -143,9 +143,10 @@ $(function(){
             }
             elem.prepend(nameTimeElem);
 
-            messagesBlock.append(elem);
+            messagesBlock.prepend(elem);
         });
 
+        $('.container').scrollTop($('.container').height());
     }
 
     function getMessageClass(uname){
