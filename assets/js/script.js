@@ -7,21 +7,22 @@ $(function(){
         nameElement = form.find('#shoutbox-name'),
         replyTextElem = form.find('#reply-text'),
         commentElement = form.find('#shoutbox-comment'),
-        messagesBlock = $('#messages-block');
+        submitBtn = form.find('#submit-btn'),
+        messagesBlock = $('#messages-block')
+        userName = getUserName();
 
 
     // Replace :) with emoji icons:
     emojione.ascii = true;
 
-    // Load the comments.
-    load();
-
-    let userName = getCookie('_uname');
     if (userName === undefined){
-        setName(nameElement);
+        $.when(setName(nameElement)).then(function (){load(true)});
     } else {
         nameElement.val(userName);
+        load(true);
     }
+
+    $('#overflow-block').scrollTop(messagesBlock.height());
     
     // On form submit, if everything is filled in, publish the shout to the database
     
@@ -29,27 +30,13 @@ $(function(){
 
     form.submit(function(e){
         e.preventDefault();
-
-        if(!canPostComment) return;
         
         var name = nameElement.val().trim();
         var comment = commentElement.val().trim();
         var reply = replyTextElem.val();
 
         if(name.length && comment.length && comment.length < 240) {
-
             publish(name, comment, reply);
-
-            // Prevent new shouts from being published
-
-            canPostComment = false;
-
-            // Allow a new comment to be posted after 5 seconds
-
-            setTimeout(function(){
-                canPostComment = true;
-            }, 2000);
-
         }
 
     });
@@ -87,33 +74,34 @@ $(function(){
     // Store the shout in the database
     
     function publish(name,comment, reply){
+        submitBtn.attr('disabled', true);
         $.post('publish.php', {name: name, comment: comment, reply: reply}, function(){
             commentElement.val("");
             replyTextElem.val("");
             load();
+            submitBtn.attr('disabled', false);
         });
     }
     
     // Fetch the latest shouts
     
-    function load(force){
+    function load(forceScroll){
+        if (!getUserName()){
+            return;
+        }
         $.getJSON('./load.php', function(data) {
-            appendComments(data, force);
+            appendComments(data, forceScroll);
         });
     }
     
     // Render an array of shouts as HTML
     
-    function appendComments(data, force) {
+    function appendComments(data, forceScroll) {
         var id = $('#messages-block .container').last().data('id');
 
-        if (!force && id && id === data[0].id){
-            console.log(force);
-            return;
-        }
+        var needScrollDown = forceScroll || (id && id !== data[0].id);
 
         messagesBlock.empty();
-
         data.forEach(function(d){
             let nameElem = document.createElement('div'),
                 timeElem = document.createElement('div'),
@@ -153,7 +141,9 @@ $(function(){
             messagesBlock.prepend(elem);
         });
 
-        $('#overflow-block').scrollTop(messagesBlock.height());
+        if (needScrollDown){
+            $('#overflow-block').scrollTop(messagesBlock.height());
+        }
     }
 
     function getMessageClass(uname){
@@ -199,7 +189,6 @@ $(function(){
                             throw new Error(response.message)
                         }
                         nameElement.val(name);
-                        load(true);
                     })
                     .catch(error => {
                         Swal.showValidationMessage(
@@ -208,6 +197,10 @@ $(function(){
                     })
             },
         });
+    }
+
+    function getUserName(){
+        return getCookie('_uname');
     }
 
 });
