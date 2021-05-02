@@ -8,8 +8,9 @@ $(function(){
         replyTextElem = form.find('#reply-text'),
         commentElement = form.find('#shoutbox-comment'),
         submitBtn = form.find('#submit-btn'),
-        messagesBlock = $('#messages-block')
-        userName = getUserName();
+        messagesBlock = $('#messages-block'),
+        userName = getUserName(),
+        canLoad = true;
 
 
     // Replace :) with emoji icons:
@@ -84,13 +85,17 @@ $(function(){
     }
     
     // Fetch the latest shouts
-    
     function load(forceScroll){
         if (!getUserName()){
             return;
         }
+        if (!canLoad){
+            return;
+        }
+        canLoad = false;
         $.getJSON('./load.php', function(data) {
             appendComments(data, forceScroll);
+            canLoad = true;
         });
     }
     
