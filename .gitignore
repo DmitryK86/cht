@@ -1,5 +1,9 @@
 # JetBrains IDE
 .idea/
 
-/data/shouts/*.json
+/data/shouts/*
+/data/uploads/*
 /vendor/
+
+!/data/shouts/.gitignore
+!/data/uploads/.gitignore

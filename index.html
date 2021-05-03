@@ -24,14 +24,17 @@
         </div>
     </div>
     <div class="fixed-bottom d-flex justify-content-center">
-        <form class="row" id="shoutbox-form" style="max-height: 90px;border: 1px solid #d3d7dc; min-width: 355px;max-width: 355px; border-radius: 8px;">
+        <form class="row" id="shoutbox-form" style="max-height: 90px;border: 1px solid #d3d7dc; min-width: 355px;max-width: 355px; border-radius: 8px;" enctype="multipart/form-data">
             <div class="col-9" style="padding: 0">
                 <input type="hidden" id="shoutbox-name" name="name"/>
                 <input type="hidden" id="reply-text" name="reply"/>
-                <textarea class="form-control" placeholder="Message" rows="2" id="shoutbox-comment"></textarea>
+                <textarea class="form-control" placeholder="Message" rows="2" id="shoutbox-comment" name="comment"></textarea>
             </div>
             <div class="col-3">
-                <button id="submit-btn" type="submit" class="btn btn-primary mb-2" style="height: 100%;">Send</button>
+                <button id="submit-btn" type="submit" class="btn btn-primary mb-2">Send</button>
+                <div class="custom-file">
+                    <input type="file" class="custom-file-input" name="image" id="image"/>
+                </div>
             </div>
         </form>
     </div>
@@ -40,6 +43,6 @@
 <script src="/assets/js/jquery-3.6.0.min.js"></script>
 <script src="/assets/js/emojione.min.js"></script>
 <script src="/assets/js/sweetalert.min.js"></script>
-<script src="/assets/js/script.js?v=10"></script>
+<script src="/assets/js/script.js?v=11"></script>
 </body>
 </html>

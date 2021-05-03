@@ -27,6 +27,13 @@ if(isset($_POST["name"]) && isset($_POST["comment"])) {
     if (!empty($replyText)){
         $comment = str_replace($replyText, '', $comment);
     }
+
+    $imageSrc = '';
+    if (isset($_FILES['image']['error']) && $_FILES['image']['error'] == UPLOAD_ERR_OK){
+        $imageSrc = '/data/uploads/' . basename($_FILES['image']['name']);
+        $uploadFile = __DIR__ . $imageSrc;
+        move_uploaded_file($_FILES['image']['tmp_name'], $uploadFile);
+    }
     
     // Storing a new shout
 
@@ -34,7 +41,8 @@ if(isset($_POST["name"]) && isset($_POST["comment"])) {
         'text' => $comment,
         'name' => $name,
         'replyText' => $replyText,
-        'createdAt' => time()
+        'createdAt' => time(),
+        'imgSrc' => $imageSrc,
     ));
     
     $repo->store($shout);

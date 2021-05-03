@@ -7,6 +7,7 @@ $(function(){
         nameElement = form.find('#shoutbox-name'),
         replyTextElem = form.find('#reply-text'),
         commentElement = form.find('#shoutbox-comment'),
+        imageElement = form.find('#image'),
         submitBtn = form.find('#submit-btn'),
         messagesBlock = $('#messages-block'),
         userName = getUserName(),
@@ -22,8 +23,6 @@ $(function(){
         nameElement.val(userName);
         load(true);
     }
-
-    $('#overflow-block').scrollTop(messagesBlock.height());
     
     // On form submit, if everything is filled in, publish the shout to the database
     
@@ -34,10 +33,10 @@ $(function(){
         
         var name = nameElement.val().trim();
         var comment = commentElement.val().trim();
-        var reply = replyTextElem.val();
+        var image = imageElement.val();
 
-        if(name.length && comment.length && comment.length < 240) {
-            publish(name, comment, reply);
+        if(name.length && ((comment.length && comment.length < 240) || image.length)) {
+            publish(this);
         }
 
     });
@@ -69,19 +68,28 @@ $(function(){
     });
 
     // Automatically refresh the shouts every 5 seconds
-    setInterval(load,5000);
+    setInterval(load,15000);
 
 
     // Store the shout in the database
     
-    function publish(name,comment, reply){
+    function publish(formObject){
         submitBtn.attr('disabled', true);
-        $.post('publish.php', {name: name, comment: comment, reply: reply}, function(){
-            commentElement.val("");
-            replyTextElem.val("");
-            load();
-            submitBtn.attr('disabled', false);
-        });
+
+        $.ajax( {
+            url: 'publish.php',
+            type: 'POST',
+            data: new FormData( formObject ),
+            processData: false,
+            contentType: false,
+            success: function(data){
+                commentElement.val("");
+                replyTextElem.val("");
+                imageElement.val('');
+                load();
+                submitBtn.attr('disabled', false);
+            }
+        } );
     }
     
     // Fetch the latest shouts
@@ -141,6 +149,12 @@ $(function(){
                 reply.innerHTML = '<small style="background: #8ae479;padding: 8px;border-radius: 5px;">'+d.replyText+'</small>';
                 elem.prepend(reply);
             }
+            if (d.imgSrc && d.imgSrc.length){
+                let imgElem = document.createElement('img');
+                imgElem.className = 'img-fluid';
+                imgElem.src = d.imgSrc;
+                elem.prepend(imgElem);
+            }
             elem.prepend(nameTimeElem);
 
             messagesBlock.prepend(elem);
@@ -148,6 +162,7 @@ $(function(){
 
         if (needScrollDown){
             $('#overflow-block').scrollTop(messagesBlock.height());
+            console.log(messagesBlock.height());
         }
     }
 
