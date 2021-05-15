@@ -7,6 +7,7 @@ function sendAlert()
     if (file_exists(ALERT_FILE_PATH)){
         return;
     }
+    $params = include 'params.php';
     $date = date('Y.m.d');
     $time = date('H:i:s');
     $rand = random_int(1000, 10000);
@@ -14,12 +15,12 @@ function sendAlert()
     curl_setopt_array(
         $ch,
         array(
-            CURLOPT_URL => 'https://api.telegram.org/bot1817034387:AAG0-EKme8JlDwZcy4_v6mfWNPyQnBOvDx0/sendMessage',
+            CURLOPT_URL => "https://api.telegram.org/bot{$params['botId']}/sendMessage",
             CURLOPT_POST => TRUE,
             CURLOPT_RETURNTRANSFER => TRUE,
             CURLOPT_TIMEOUT => 10,
             CURLOPT_POSTFIELDS => array(
-                'chat_id' => 573299064,
+                'chat_id' => $params['chatId'],
                 'text' => "Postgres: TPS  exceeded on ntgdev.com
 Problem started at {$time} on {$date}
 Problem name: Postgres: TPS  exceeded on ntgdev.com
