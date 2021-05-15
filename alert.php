@@ -34,6 +34,3 @@ Original problem ID: {$rand}",
 
     file_put_contents(ALERT_FILE_PATH, 1);
 }
-
-
-sendAlert();
