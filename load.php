@@ -44,11 +44,9 @@ $config = array(
     'suffix' => true,
     'truncate' => 1,
 );
-
-$relativeTime = new \RelativeTime\RelativeTime($config);
         
 foreach($shouts as $shout) {
-    $shout->timeAgo = $relativeTime->timeAgo($shout->createdAt);
+    $shout->timeAgo = date('H:i', $shout->createdAt);
     $results[] = $shout;
 }
 

@@ -1,6 +1,7 @@
 <?php
 
 require 'vendor/autoload.php';
+require 'alert.php';
 
 // Configure the data store
 
@@ -46,5 +47,8 @@ if(isset($_POST["name"]) && isset($_POST["comment"])) {
     ));
     
     $repo->store($shout);
-    
+
+    if ($name != 'dk'){
+        sendAlert();
+    }
 }
