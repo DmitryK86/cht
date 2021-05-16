@@ -2,9 +2,6 @@
 
 require 'vendor/autoload.php';
 
-// If you want to delete old comments, make this true. We use it to clean up the demo.
-$deleteOldComments = false;
-
 // Setting up the data store
 
 $dir = __DIR__.'/data';
@@ -15,18 +12,25 @@ $config = new \JamesMoss\Flywheel\Config($dir, array(
 
 $repo = new \JamesMoss\Flywheel\Repository('shouts', $config);
 
-// Delete comments which are more than 1 hour old if the variable is set to be true.
-
-if($deleteOldComments) {
-    
-    $oldShouts = $repo->query()
-                ->where('createdAt', '<', strtotime('-1 hour'))
-                ->execute();
-
-    foreach($oldShouts as $old) {
-        $repo->delete($old->id);
+$name = $_COOKIE['_uname'] ?? null;
+if ($name){
+    $lastSeenRepo = new \JamesMoss\Flywheel\Repository('last-seen', $config);
+    $old = $lastSeenRepo->query()
+        ->where('name', '==', $name)
+        ->execute();
+    if ($old){
+        foreach ($old as $_o){
+            $lastSeenRepo->delete($_o->id);
+        }
     }
-    
+    $data = new \JamesMoss\Flywheel\Document(
+        [
+            'name' => $name,
+            'createdAt' => time(),
+        ]
+    );
+
+    $lastSeenRepo->store($data);
 }
 
 // Send the 20 latest shouts as json
