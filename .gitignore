@@ -2,8 +2,11 @@
 .idea/
 
 /data/shouts/*
+/data/last-seen/*
 /data/uploads/*
+/data/alert.sign
 /vendor/
 
 !/data/shouts/.gitignore
+!/data/last-seen/.gitignore
 !/data/uploads/.gitignore
