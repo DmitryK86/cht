@@ -121,10 +121,20 @@ $(function(){
                 nameTimeElem = document.createElement('div'),
                 textElem = document.createElement('p'),
                 replyBtn = document.createElement('small'),
-                elem = document.createElement('div');
+                elem = document.createElement('div'),
+                online = document.createElement('div');
 
-            nameElem.className = 'col-7';
+            nameElem.className = 'col-2';
             nameElem.innerHTML = '<h6 class="mb-1" style="color: red">' + d.name + '</h6>';
+
+            online.className = 'col-5';
+            let badgeClass = 'secondary',
+                badgeText = 'Offline';
+            if (d.isOnline){
+                badgeClass = 'success';
+                badgeText = 'Online';
+            }
+            online.innerHTML = '<span class="badge bg-'+badgeClass+'">' + badgeText + '</span>';
 
             timeElem.className = 'col-5';
             timeElem.setAttribute("style", "text-align:right;");
@@ -132,6 +142,7 @@ $(function(){
 
             nameTimeElem.className = 'row justify-content-between';
             nameTimeElem.prepend(timeElem);
+            nameTimeElem.prepend(online);
             nameTimeElem.prepend(nameElem);
 
             textElem.className = 'mb-1';

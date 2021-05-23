@@ -2,19 +2,44 @@
 
 require 'vendor/autoload.php';
 
-// Setting up the data store
-
-$dir = __DIR__.'/data';
-
-$config = new \JamesMoss\Flywheel\Config($dir, array(
-    'formatter' => new \JamesMoss\Flywheel\Formatter\JSON,
-));
-
-$repo = new \JamesMoss\Flywheel\Repository('shouts', $config);
-
 $name = $_COOKIE['_uname'] ?? null;
-if ($name){
-    $lastSeenRepo = new \JamesMoss\Flywheel\Repository('last-seen', $config);
+storeLastSeen($name);
+
+$repo = getRepository('shouts');
+// Send the 20 latest shouts as json
+$shouts = $repo->query()
+        ->orderBy('createdAt ASC')
+        ->limit(20,0)
+        ->execute();
+
+$results = array();
+        
+foreach($shouts as $shout) {
+    $shout->timeAgo = date('H:i', $shout->createdAt);
+    $shout->isOnline = isOnline($shout->name);
+    $results[] = $shout;
+}
+
+header('Content-type: application/json');
+echo json_encode($results);
+exit();
+
+function getRepository($repoName)
+{
+    $dir = __DIR__.'/data';
+    $config = new \JamesMoss\Flywheel\Config($dir, array(
+        'formatter' => new \JamesMoss\Flywheel\Formatter\JSON,
+    ));
+
+    return new \JamesMoss\Flywheel\Repository($repoName, $config);
+}
+
+function storeLastSeen($name)
+{
+    if (!$name){
+        return;
+    }
+    $lastSeenRepo = getRepository('last-seen');
     $old = $lastSeenRepo->query()
         ->where('name', '==', $name)
         ->execute();
@@ -33,26 +58,16 @@ if ($name){
     $lastSeenRepo->store($data);
 }
 
-// Send the 20 latest shouts as json
+function isOnline($name)
+{
+    static $data = null;
+    if ($data === null){
+        $lastSeenRepo = getRepository('last-seen');
+        $result = $lastSeenRepo->findAll();
+        foreach ($result as $res){
+            $data[$res->name] = $res->createdAt;
+        }
+    }
 
-$shouts = $repo->query()
-        ->orderBy('createdAt ASC')
-        ->limit(20,0)
-        ->execute();
-
-$results = array();
-
-$config = array(
-    'language' => '\RelativeTime\Languages\English',
-    'separator' => ', ',
-    'suffix' => true,
-    'truncate' => 1,
-);
-        
-foreach($shouts as $shout) {
-    $shout->timeAgo = date('H:i', $shout->createdAt);
-    $results[] = $shout;
+    return $data[$name] >= (time() - 15);
 }
-
-header('Content-type: application/json');
-echo json_encode($results);
