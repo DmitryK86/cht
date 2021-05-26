@@ -114,7 +114,7 @@ $(function(){
 
         var needScrollDown = forceScroll || (id && id !== data[0].id);
 
-        messagesBlock.empty();
+        var messages = [];
         data.forEach(function(d){
             let nameElem = document.createElement('div'),
                 timeElem = document.createElement('div'),
@@ -168,12 +168,14 @@ $(function(){
             }
             elem.prepend(nameTimeElem);
 
-            messagesBlock.prepend(elem);
+            messages.unshift(elem);
         });
+
+        messagesBlock.empty();
+        messagesBlock.append(messages);
 
         if (needScrollDown){
             $('#overflow-block').scrollTop(messagesBlock.height());
-            console.log(messagesBlock.height());
         }
     }
 
