@@ -35,7 +35,7 @@ $(function(){
         var comment = commentElement.val().trim();
         var image = imageElement.val();
 
-        if(name.length && (comment.length || image.length)) {
+        if(name.length && ((comment.length && comment.length < 1024) || image.length)) {
             publish(this);
         }
 
