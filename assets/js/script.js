@@ -68,7 +68,7 @@ $(function(){
     });
 
     // Automatically refresh the shouts every 5 seconds
-    setInterval(load,4000);
+    setInterval(load,60000);
 
 
     // Store the shout in the database
