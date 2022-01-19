@@ -12,16 +12,20 @@ $config = new \JamesMoss\Flywheel\Config($dir, array(
 ));
 
 $repo = new \JamesMoss\Flywheel\Repository('shouts', $config);
-    
+
 // Store the posted shout data to the data store
 
 if(isset($_POST["name"]) && isset($_POST["comment"])) {
-    
+
     $name = htmlspecialchars($_POST["name"]);
     $name = str_replace(array("\n", "\r"), '', $name);
 
     $comment = htmlspecialchars($_POST["comment"]);
-    $comment = str_replace(array("\n", "\r"), '', $comment);
+    $comment = preg_replace(
+        '#((https?|ftp)://(\S*?\.\S*?))([\s)\[\]{},;"\':<]|\.\s|$)#i',
+        "<a href=\"$1\" target=\"_blank\">$3</a>$4",
+        $comment
+    );
 
     $replyText = $_POST['reply'] ?? '';
 
@@ -35,7 +39,7 @@ if(isset($_POST["name"]) && isset($_POST["comment"])) {
         $uploadFile = __DIR__ . $imageSrc;
         move_uploaded_file($_FILES['image']['tmp_name'], $uploadFile);
     }
-    
+
     // Storing a new shout
 
     $shout = new \JamesMoss\Flywheel\Document(array(
@@ -45,7 +49,7 @@ if(isset($_POST["name"]) && isset($_POST["comment"])) {
         'createdAt' => time(),
         'imgSrc' => $imageSrc,
     ));
-    
+
     $repo->store($shout);
 
     if ($name != 'dk'){

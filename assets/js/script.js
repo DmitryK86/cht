@@ -23,24 +23,24 @@ $(function(){
         nameElement.val(userName);
         load(true);
     }
-    
+
     // On form submit, if everything is filled in, publish the shout to the database
-    
+
     var canPostComment = true;
 
     form.submit(function(e){
         e.preventDefault();
-        
+
         var name = nameElement.val().trim();
         var comment = commentElement.val().trim();
         var image = imageElement.val();
 
-        if(name.length && ((comment.length && comment.length < 1024) || image.length)) {
+        if(name.length && ((comment.length && comment.length < 2048) || image.length)) {
             publish(this);
         }
 
     });
-    
+
     // Clicking on the REPLY button writes the name of the person you want to reply to into the textbox.
 
     messagesBlock.on('click', '#comment-reply', function(e){
@@ -49,15 +49,15 @@ $(function(){
         replyTextElem.val('@'+replyText);
         commentElement.val('@'+replyText+'\r\n').focus();
     });
-    
+
     // Clicking the refresh button will force the load function
-    
+
     var canReload = true;
 
     refreshButton.click(function(){
 
         if(!canReload) return false;
-        
+
         load();
         canReload = false;
 
@@ -72,7 +72,7 @@ $(function(){
 
 
     // Store the shout in the database
-    
+
     function publish(formObject){
         submitBtn.attr('disabled', true);
 
@@ -91,7 +91,7 @@ $(function(){
             }
         } );
     }
-    
+
     // Fetch the latest shouts
     function load(forceScroll){
         if (!getUserName()){
@@ -106,9 +106,9 @@ $(function(){
             canLoad = true;
         });
     }
-    
+
     // Render an array of shouts as HTML
-    
+
     function appendComments(data, forceScroll) {
         var id = $('#messages-block .container').last().data('id');
 
